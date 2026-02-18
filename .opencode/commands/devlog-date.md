@@ -6,7 +6,7 @@ Generate a project devlog for date `$1` (format `YYYY-MM-DD`) and project slug `
 
 Process:
 
-1. Load and use the `sessions-discovery` skill to find session transcripts with activity on `$1` for project `$2`.
+1. Load and use the `sessions-discovery` skill and run `python tools/list-sessions.py $1 --match $2` (default `$2` to `ttcg`) to find session transcripts.
 2. For every discovered session, use the `session-summary` subagent to produce a concise summary.
 3. Write one file per session to `summaries/$1-<sessionId>.md`.
 4. Synthesize all per-session summaries into `notes/$1.md` with:

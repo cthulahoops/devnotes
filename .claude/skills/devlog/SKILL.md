@@ -1,3 +1,8 @@
+---
+name: devlog
+description: Generate concise, evidence-backed daily devlogs from session data, git history, and PR metadata.
+---
+
 # Devlog Generation
 
 Use this skill to produce high-signal daily devlogs from local assistant session data, git history, and PR metadata.
@@ -18,6 +23,8 @@ Produce a concise, accurate log entry in `notes/YYYY-MM-DD.md` with:
 4. References (session logs, PRs, commits)
 5. Open follow-ups
 
+The entry should read cleanly for someone who was not in the session.
+
 ## Inputs
 
 - Date to summarize (default: explicit date from user)
@@ -26,14 +33,17 @@ Produce a concise, accurate log entry in `notes/YYYY-MM-DD.md` with:
   - `~/.claude/projects/*<project>*`
   - `~/.codex/sessions/YYYY/MM/DD`
 - Optional repo path for git/gh validation
+- Exclusion roots: ignore work under `~/clients/**` by default unless the user explicitly asks to include client work.
 
 ## Workflow
 
 ### 1) Discover relevant sessions quickly
 
+- Load and use the `sessions-discovery` skill first.
 - Find matching project session files.
 - Filter to the target date.
 - Keep a list of candidate session paths.
+- Apply exclusions early: drop any session/artifact whose cwd, path, or repo is under `~/clients/**` unless inclusion is explicitly requested.
 
 ### 2) Use parallel subagents for first-pass summaries (important)
 
@@ -55,6 +65,9 @@ Then run one synthesis pass to merge and deduplicate.
 - Confirm PR states and metadata via `gh pr view`.
 - Confirm commit existence and branch context via `git log`/`git branch`.
 - Resolve contradictions explicitly (for example, session claim vs repo reality).
+- Prefer commit history as the primary evidence of what was shipped.
+- If no commits exist for the target day, state it plainly (for example: "No changes committed - changes remain uncommitted in the repo").
+- Do not include investigation/process narration in the devlog (no "I checked X", "I scanned Y"). Report outcomes only.
 
 ### 4) Draft the devlog entry
 
@@ -83,12 +96,24 @@ Write `notes/YYYY-MM-DD.md` with this template:
 - ...
 ```
 
+Writing guardrails for the draft:
+
+- Keep each bullet focused on user-visible outcomes or meaningful engineering decisions.
+- Do not include routine validation noise (for example raw test counts) unless it materially changed delivery confidence or the user asked for it.
+- Avoid tool-name drive-by mentions. If a tool/workflow name appears, explain it in plain language the first time or replace with the outcome it enabled.
+- Do not include negative scope bookkeeping (for example "no sessions found in X") unless it affects confidence; if it does, put it in uncertainty wording, not as a prominent result bullet.
+- Prefer one coherent mention of an artifact over multiple scattered references to the same artifact.
+- Do not report the research process. Report what was done, what shipped, and what remains uncommitted.
+
 ### 5) Quality bar
 
 - Prefer concrete outcomes over activity descriptions.
 - Include only claims with references.
 - Keep tone factual and concise.
 - Call out uncertainty when evidence is partial.
+- Remove or rewrite bullets that require private context to understand.
+- Ensure each section is internally coherent (no orphan jargon, no repeated partial points).
+- Prefer plain, explicit repo-state language over procedural detail.
 
 ## Suggested subagent prompts
 
