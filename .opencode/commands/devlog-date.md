@@ -2,11 +2,11 @@
 description: Build day devlog from sessions for a date
 ---
 
-Generate a project devlog for date `$1` (format `YYYY-MM-DD`) and project slug `$2` (default to `ttcg` if omitted).
+Generate a devlog for date `$1` (format `YYYY-MM-DD`) across all non-client work. Optional project slug `$2` may be provided to narrow scope.
 
 Process:
 
-1. Load and use the `sessions-discovery` skill and run `python tools/list-sessions.py $1 --match $2` (default `$2` to `ttcg`) to find session transcripts.
+1. Load and use the `sessions-discovery` skill and run `python tools/list-sessions.py $1 --exclude clients` unless the user explicitly asks to include client work. If `$2` is provided, add `--match $2` to narrow scope.
 2. For every discovered session, use the `session-summary` subagent to produce a concise summary.
 3. Write one file per session to `summaries/$1-<sessionId>.md`.
 4. Synthesize all per-session summaries into `notes/$1.md` with:
