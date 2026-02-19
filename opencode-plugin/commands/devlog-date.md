@@ -6,7 +6,7 @@ Generate a devlog for date `$1` (format `YYYY-MM-DD`) across all non-client work
 
 Process:
 
-1. Load and use the `sessions-discovery` skill and run `python tools/list-sessions.py $1 --exclude clients` unless the user explicitly asks to include client work. If `$2` is provided, add `--match $2` to narrow scope.
+1. Load and use the `sessions-discovery` skill and run `devlog-list-sessions $1 --exclude clients` unless the user explicitly asks to include client work. If `$2` is provided, add `--match $2` to narrow scope.
 2. For every discovered session, use the `session-summary` subagent to produce a concise summary.
 3. Write one file per session to `summaries/$1-<sessionId>.md`.
 4. Synthesize all per-session summaries into `notes/$1.md` with:

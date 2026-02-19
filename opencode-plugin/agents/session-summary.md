@@ -7,7 +7,7 @@ model: openai/gpt-5.1-codex-mini
 Generate a review of the given session summary. Convert the jsonl to
 markdown using:
 
-python3 tools/transcript_to_markdown.py --only-tools Bash --include-thinking <transcript.jsonl>
+devlog-transcript-to-markdown --only-tools Bash --include-thinking <transcript.jsonl>
 
 And then produce a summary:
 

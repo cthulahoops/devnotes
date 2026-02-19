@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "devlog-notes"
 version = "0.1.0"
@@ -11,4 +15,13 @@ dependencies = [
 ]
 
 [project.scripts]
-devlog-notes = "serve:main"
+devlog-notes = "devlog_notes.serve:main"
+devlog-build-site = "devlog_notes.build_notes_site:main"
+devlog-list-sessions = "devlog_notes.list_sessions:main"
+devlog-transcript-to-markdown = "devlog_notes.transcript_to_markdown:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
