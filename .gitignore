@@ -12,11 +12,4 @@ dist/
 src/*.egg-info/
 
 # Local/runtime outputs
-site/
-assets/
-templates/
-uv.lock
-
-# Local tool sandboxes/state
-.opencode/
-.claude/
+# (intentionally no root-level template/assets/site ignores)
