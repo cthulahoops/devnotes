@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Devlog Notes{% endblock %}
+{% block content %}
+<header>
+  <h1>Recent Notes</h1>
+  <p class="meta">Feed view of the latest 5 entries.</p>
+</header>
+<nav>
+  <a href="/archive/">View Archive</a>
+</nav>
+{% if notes %}
+  {% for note in notes %}
+  <section class="feed-entry">
+    <div class="meta">{{ note.note_date.isoformat() }}</div>
+    <h2><a href="/notes/{{ note.slug }}/">{{ note.title }}</a></h2>
+    <article>
+      {{ note.html | safe }}
+    </article>
+  </section>
+  {% endfor %}
+{% else %}
+  <p>No notes found in <code>notes/</code>.</p>
+{% endif %}
+{% endblock %}

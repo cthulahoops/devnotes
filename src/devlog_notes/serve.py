@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import os
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -12,17 +14,47 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markdown_it import MarkdownIt
 
-def _resolve_root() -> Path:
+PACKAGE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PACKAGE_TEMPLATES_DIR = PACKAGE_DIR / "templates"
+PACKAGE_ASSETS_DIR = PACKAGE_DIR / "assets"
+
+
+def _first_existing(candidates: Iterable[Path]) -> Path | None:
+  for candidate in candidates:
+    if candidate.exists():
+      return candidate
+  return None
+
+
+def _resolve_notes_dir() -> Path:
   cwd = Path.cwd()
-  if (cwd / "notes").exists() and (cwd / "templates").exists() and (cwd / "assets").exists():
+  if (cwd / "notes").is_dir():
+    return cwd / "notes"
+  if any(cwd.glob("*.md")):
     return cwd
-  return Path(__file__).resolve().parents[2]
+  if (REPO_ROOT / "notes").is_dir():
+    return REPO_ROOT / "notes"
+  return cwd / "notes"
 
 
-ROOT = _resolve_root()
-NOTES_DIR = ROOT / "notes"
-TEMPLATES_DIR = ROOT / "templates"
-ASSETS_DIR = ROOT / "assets"
+def _resolve_templates_dir() -> Path:
+  resolved = _first_existing([Path.cwd() / "templates", PACKAGE_TEMPLATES_DIR, REPO_ROOT / "templates"])
+  if resolved is None:
+    raise RuntimeError("No templates directory found for devlog-notes")
+  return resolved
+
+
+def _resolve_assets_dir() -> Path:
+  resolved = _first_existing([Path.cwd() / "assets", PACKAGE_ASSETS_DIR, REPO_ROOT / "assets"])
+  if resolved is None:
+    raise RuntimeError("No assets directory found for devlog-notes")
+  return resolved
+
+
+NOTES_DIR = _resolve_notes_dir()
+TEMPLATES_DIR = _resolve_templates_dir()
+ASSETS_DIR = _resolve_assets_dir()
 
 md = MarkdownIt("commonmark")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -124,8 +156,20 @@ def note_detail(slug: str, request: Request) -> HTMLResponse:
   )
 
 
+def _env_flag(name: str, default: bool = False) -> bool:
+  value = os.getenv(name)
+  if value is None:
+    return default
+  return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def main() -> None:
-  uvicorn.run("devlog_notes.serve:app", host="127.0.0.1", port=8000, reload=True)
+  uvicorn.run(
+    "devlog_notes.serve:app",
+    host="127.0.0.1",
+    port=8000,
+    reload=_env_flag("DEVLOG_NOTES_RELOAD", default=False),
+  )
 
 
 if __name__ == "__main__":

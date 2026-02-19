@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ note.title }} | Devlog Notes{% endblock %}
+{% block content %}
+<header>
+  <h1>{{ note.title }}</h1>
+  <p class="meta">{{ note.note_date.isoformat() }}</p>
+</header>
+<nav>
+  <a href="/">Back to Home</a>
+  <a href="/archive/">View Archive</a>
+</nav>
+<article>
+  {{ note.html | safe }}
+</article>
+{% endblock %}

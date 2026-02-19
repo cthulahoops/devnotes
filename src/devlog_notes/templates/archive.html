@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Archive | Devlog Notes{% endblock %}
+{% block content %}
+<header>
+  <h1>Archive</h1>
+  <p class="meta">All available notes.</p>
+</header>
+<nav>
+  <a href="/">Back to Home</a>
+</nav>
+{% if notes %}
+  {% for note in notes %}
+  <section class="card">
+    <div class="meta">{{ note.note_date.isoformat() }}</div>
+    <h2><a href="/notes/{{ note.slug }}/">{{ note.title }}</a></h2>
+  </section>
+  {% endfor %}
+{% else %}
+  <p>No notes found in <code>notes/</code>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,95 @@
+:root {
+  --bg: #f6f4ef;
+  --surface: #fffdf9;
+  --text: #202022;
+  --muted: #5a5a66;
+  --accent: #0f6a64;
+  --accent-soft: #e2f2ef;
+  --border: #d8d5cf;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+  background: radial-gradient(circle at top right, #ece7db, var(--bg) 35%);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.1rem 3rem;
+}
+
+header {
+  margin-bottom: 1.5rem;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+nav {
+  margin-bottom: 1.2rem;
+}
+
+nav a {
+  margin-right: 1rem;
+}
+
+article {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem;
+}
+
+.feed-entry {
+  margin-bottom: 2rem;
+}
+
+.feed-entry article {
+  margin-top: 0.6rem;
+}
+
+.feed-entry + .feed-entry {
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
