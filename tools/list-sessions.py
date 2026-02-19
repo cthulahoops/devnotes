@@ -2,7 +2,10 @@
 """List Claude project sessions with activity on a target date.
 
 Example:
-  python tools/list-sessions.py 2026-02-06 --match ttcg
+  python tools/list-sessions.py 2026-02-06 --exclude clients
+
+Optional narrowing:
+  python tools/list-sessions.py 2026-02-06 --match ttcg --exclude clients
 """
 
 from __future__ import annotations
@@ -23,6 +26,11 @@ def parse_args() -> argparse.Namespace:
         "--match",
         default="",
         help="Filter project directory names by substring (eg. ttcg)",
+    )
+    parser.add_argument(
+        "--exclude",
+        default="",
+        help="Exclude project directory names by substring (opposite of --match)",
     )
     parser.add_argument(
         "--projects-root",
@@ -46,12 +54,15 @@ def validate_date(value: str) -> str:
     return value
 
 
-def discover_project_roots(projects_root: str, match: str) -> list[str]:
+def discover_project_roots(projects_root: str, match: str, exclude: str) -> list[str]:
     pattern = os.path.join(projects_root, "*")
     roots = [p for p in glob.glob(pattern) if os.path.isdir(p)]
     if match:
         needle = match.lower()
         roots = [p for p in roots if needle in os.path.basename(p).lower()]
+    if exclude:
+        blocked = exclude.lower()
+        roots = [p for p in roots if blocked not in os.path.basename(p).lower()]
     return sorted(roots)
 
 
@@ -153,10 +164,11 @@ def main() -> int:
     date = validate_date(args.date)
     projects_root = os.path.expanduser(args.projects_root)
 
-    roots = discover_project_roots(projects_root, args.match)
+    roots = discover_project_roots(projects_root, args.match, args.exclude)
     if not roots:
         print(
-            f"No project roots found under {projects_root!r} for --match {args.match!r}.",
+            "No project roots found under "
+            f"{projects_root!r} for --match {args.match!r} and --exclude {args.exclude!r}.",
             file=sys.stderr,
         )
         return 1
