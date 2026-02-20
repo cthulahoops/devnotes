@@ -7,7 +7,7 @@ model: openai/gpt-5.1-codex-mini
 Generate a structured, evidence-first session summary from a transcript.
 Convert the jsonl to markdown using:
 
-devnotes-transcript-to-markdown --only-tools Bash --include-thinking <transcript.jsonl>
+uv run devnotes transcript-to-markdown --only-tools Bash --include-thinking <transcript.jsonl>
 
 Then produce a markdown summary with this exact structure:
 

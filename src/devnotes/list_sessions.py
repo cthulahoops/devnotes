@@ -17,7 +17,7 @@ import os
 import sys
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="List session transcripts with activity on YYYY-MM-DD."
     )
@@ -47,7 +47,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Include agent-*.jsonl session files",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def validate_date(value: str) -> str:
@@ -222,15 +222,22 @@ def print_results(hits: list[str]) -> None:
         print(path)
 
 
-def main() -> int:
-    args = parse_args()
-    date = validate_date(args.date)
-    projects_root = os.path.expanduser(args.projects_root)
-    codex_sessions_root = os.path.expanduser(args.codex_sessions_root)
+def run(
+    *,
+    date: str,
+    match: str = "",
+    exclude: str = "",
+    projects_root: str = "~/.claude/projects",
+    codex_sessions_root: str = "~/.codex/sessions",
+    include_agent: bool = False,
+) -> int:
+    date = validate_date(date)
+    projects_root = os.path.expanduser(projects_root)
+    codex_sessions_root = os.path.expanduser(codex_sessions_root)
 
-    roots = discover_project_roots(projects_root, args.match, args.exclude)
-    claude_hits = discover_sessions(roots, date, include_agent=args.include_agent) if roots else []
-    codex_hits = discover_codex_sessions(codex_sessions_root, date, args.match, args.exclude)
+    roots = discover_project_roots(projects_root, match, exclude)
+    claude_hits = discover_sessions(roots, date, include_agent=include_agent) if roots else []
+    codex_hits = discover_codex_sessions(codex_sessions_root, date, match, exclude)
     hits = sorted(claude_hits + codex_hits)
 
     if not hits and not roots and not os.path.isdir(codex_date_dir(codex_sessions_root, date)):
@@ -243,6 +250,18 @@ def main() -> int:
 
     print_results(hits)
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    return run(
+        date=args.date,
+        match=args.match,
+        exclude=args.exclude,
+        projects_root=args.projects_root,
+        codex_sessions_root=args.codex_sessions_root,
+        include_agent=args.include_agent,
+    )
 
 
 if __name__ == "__main__":

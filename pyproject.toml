@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "FastAPI server for local markdown devnotes"
 requires-python = ">=3.13"
 dependencies = [
+    "click>=8.1.8",
     "fastapi>=0.116.1",
     "jinja2>=3.1.6",
     "markdown-it-py>=4.0.0",
@@ -15,10 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-devnotes = "devnotes.serve:main"
-devnotes-build-site = "devnotes.build_notes_site:main"
-devnotes-list-sessions = "devnotes.list_sessions:main"
-devnotes-transcript-to-markdown = "devnotes.transcript_to_markdown:main"
+devnotes = "devnotes.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -234,7 +234,7 @@ def _write_assets() -> None:
   (ASSETS_DIR / "styles.css").write_text(CSS_CONTENT, encoding="utf-8")
 
 
-def main() -> None:
+def main() -> int:
   md = MarkdownIt("commonmark")
 
   if SITE_DIR.exists():
@@ -246,7 +246,8 @@ def main() -> None:
   _write_assets()
 
   print(f"Built {len(notes)} notes into {SITE_DIR}")
+  return 0
 
 
 if __name__ == "__main__":
-  main()
+  raise SystemExit(main())

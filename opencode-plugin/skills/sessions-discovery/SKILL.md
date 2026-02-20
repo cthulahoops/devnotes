@@ -35,13 +35,13 @@ Use this skill to produce a reliable list of session transcript files to summari
 
 ## Preferred implementation approach
 
-- Use `devnotes-list-sessions` for robust JSONL scanning.
+- Use `uv run devnotes list-sessions` for robust JSONL scanning.
 - Do not rely only on `sessions-index.json` if it does not include the target date.
 
 Primary command pattern:
 
 ```bash
-devnotes-list-sessions 2026-02-06 --exclude clients
+uv run devnotes list-sessions 2026-02-06 --exclude clients
 ```
 
 Useful options:
@@ -70,4 +70,4 @@ Return only a newline-separated list of session file paths.
 - Ensure all returned paths exist.
 - Prefer deterministic ordering by `sessionId`.
 - Keep output factual and concise.
-- If `devnotes-list-sessions` is available, prefer it over ad-hoc one-off scanner snippets.
+- If `uv run devnotes list-sessions` is available, prefer it over ad-hoc one-off scanner snippets.

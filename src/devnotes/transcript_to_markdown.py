@@ -34,7 +34,7 @@ class ParseResult:
     usage_records: int
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Read a session transcript JSONL and output markdown conversation."
     )
@@ -69,7 +69,7 @@ def parse_args() -> argparse.Namespace:
         metavar="TOOL",
         help='Include only specific tool(s) (example: --only-tools "tool:Read")',
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def normalize_role(raw_role: str | None, fallback: str) -> str:
@@ -404,8 +404,8 @@ def render_markdown(source: Path, result: ParseResult) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def main() -> int:
-    args = parse_args()
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     input_path = args.input.expanduser().resolve()
     if not input_path.exists():
         print(f"Input file not found: {input_path}", file=sys.stderr)

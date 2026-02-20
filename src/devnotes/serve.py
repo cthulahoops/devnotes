@@ -163,14 +163,21 @@ def _env_flag(name: str, default: bool = False) -> bool:
   return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def main() -> None:
+def serve(host: str = "127.0.0.1", port: int = 8000, reload: bool | None = None) -> None:
+  if reload is None:
+    reload = _env_flag("DEVNOTES_RELOAD", default=False)
   uvicorn.run(
     "devnotes.serve:app",
-    host="127.0.0.1",
-    port=8000,
-    reload=_env_flag("DEVNOTES_RELOAD", default=False),
+    host=host,
+    port=port,
+    reload=reload,
   )
 
 
+def main() -> int:
+  serve()
+  return 0
+
+
 if __name__ == "__main__":
-  main()
+  raise SystemExit(main())
