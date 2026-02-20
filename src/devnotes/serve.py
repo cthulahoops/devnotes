@@ -64,11 +64,13 @@ NOTES_DIR = _resolve_notes_dir()
 SUMMARIES_DIR = _resolve_summaries_dir()
 TEMPLATES_DIR = _resolve_templates_dir()
 ASSETS_DIR = _resolve_assets_dir()
+IMAGES_DIR = Path.cwd() / "images"
 
 md = MarkdownIt("commonmark")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 app = FastAPI(title="Devnotes")
 app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
+app.mount("/images", StaticFiles(directory=str(IMAGES_DIR), check_dir=False), name="images")
 
 
 @dataclass
