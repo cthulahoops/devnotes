@@ -11,3 +11,7 @@
 - `uv run devnotes build-site`
 - `uv run devnotes list-sessions <YYYY-MM-DD> [--match <text>] [--exclude <text>] [--include-agent] [--projects-root <path>] [--codex-sessions-root <path>]`
 - `uv run devnotes transcript-to-markdown`
+
+## Git Workflow
+
+After every complete, atomic change to the code, commit.

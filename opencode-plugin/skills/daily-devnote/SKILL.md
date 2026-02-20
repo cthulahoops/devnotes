@@ -7,11 +7,21 @@ description: Structure a concise, evidence-linked daily devnote with clear secti
 
 Use this skill when drafting or editing a single day note in `notes/YYYY-MM-DD.md`.
 
+If asked to replace a note, don't read the old version, just overwrite with new content.
+
 ## Required output format
 
-- Title: specific and content-bearing. Never use generic labels like "non-client work", "misc", or "summary".
-  - Good title pattern: `<YYYY-MM-DD> - <top 2-4 concrete themes or artifacts>`
-  - Example: `2026-01-29 - objective final-state fixes, sprite automation, shell quoting hardening`
+- Title (Markdown H1): first line must be a Markdown H1 (`# ...`) that is specific, evidence-grounded, and interesting without hype. Emphasize the single most interesting thing from the day.
+  - Required format: `# <YYYY-MM-DD> - <title>`
+  - Preferred style: measured hook + concrete technical payoff.
+  - Recommended pattern: `<problem signal>, but <higher-impact engineering outcome>`
+  - Good examples:
+    - `# 2026-02-16 - The room-session bug was real, but the bigger win was safer campaign logic`
+    - `# 2026-01-29 - Shell quoting looked minor, but it prevented deployment-footgun failures`
+  - Avoid:
+    - Generic labels (`non-client work`, `misc`, `summary`)
+    - All-caps or emotional hype (`SHOCKING`, `INSANE`, `EVERYTHING CHANGED`)
+    - Vague claims without artifacts (`made things better`)
 - `## What I actually did`
   - 3-8 bullets, each starting with a strong verb.
   - Include concrete objects: file paths, commit hashes, script names, test names, commands, URLs, issue IDs.
@@ -24,14 +34,27 @@ Use this skill when drafting or editing a single day note in `notes/YYYY-MM-DD.m
 - `## Open loops / unresolved`
   - Include only explicitly unresolved work: unknowns, pending confirmations, and what evidence is still needed.
   - Do not treat interruption/disconnect/session-end alone as an open loop.
-  - Mark an item unresolved only if there is transcript evidence of intended follow-up or blocked completion.
+  - Mark an item unresolved when there is evidence of intended follow-up or blocked completion in transcripts, commits, PRs, or issues.
   - If none, write `- None`.
-- `## Evidence and references`
-  - Group by type where possible: commits, session summaries, transcripts, PRs, docs reviewed.
-  - Every major claim in the note must map to at least one reference.
 - `## UTC timeline`
   - Use 3-8 compact entries: `HH:MM-HH:MM - action + artifact`.
+  - Rounded timestamps are preferred for readability.
   - Exclude trivial housekeeping unless it materially changed direction/outcome.
+
+## References
+
+Put the references inline where relevant, and link to the reference.
+
+Use absolute links only.
+
+For summary links specifically, use absolute server paths (for example, `/summary/<file>.md`) rather than full URLs.
+
+Eg:
+
+[PR #45](https://github.com/org/repo/pull/45) or ([commit](https://github.com/org/repo/commit/<sha>)), or ([conversation](/summary/<file>.md))
+
+
+Don't include a references and evidence section.
 
 ## Quality rules
 
@@ -44,3 +67,6 @@ Use this skill when drafting or editing a single day note in `notes/YYYY-MM-DD.m
 - Preserve uncertainty. Do not present guesses as facts.
 - If a detail is interesting but was not explicitly surfaced to the user during sessions, still include it in `Notable details worth remembering`.
 - If there are fewer than 2 sessions or weak signal, produce a shorter note rather than filler content.
+- Title tone should be curiosity with credibility: journalistic hook, engineering substance.
+
+Ignore any sessions which don't involve interesting work. In particular ignore anything that's just summarising.
