@@ -49,9 +49,13 @@ Use absolute links only.
 
 For summary links specifically, use absolute server paths (for example, `/summary/<file>.md`) rather than full URLs.
 
-Eg:
+Required link styles:
 
-[PR #45](https://github.com/org/repo/pull/45) or ([commit](https://github.com/org/repo/commit/<sha>)), or ([conversation](/summary/<file>.md))
+- PRs must always use: `[PR #<number>](https://github.com/<org>/<repo>/pull/<number>)`
+- Commit hashes must always be clickable links, and the linked text should be the short hash:
+  - Example: [`a1b2c3d`](https://github.com/<org>/<repo>/commit/a1b2c3d4e5f6...)
+- Conversation links must use a very short id label:
+  - Example: `[edf](/summary/<file>.md)`
 
 
 Don't include a references and evidence section.
