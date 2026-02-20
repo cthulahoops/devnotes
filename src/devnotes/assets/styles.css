@@ -93,3 +93,9 @@ hr {
   border-top: 1px solid var(--border);
   margin: 1.25rem 0;
 }
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
