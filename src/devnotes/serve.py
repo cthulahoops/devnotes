@@ -38,6 +38,15 @@ def _resolve_notes_dir() -> Path:
   return cwd / "notes"
 
 
+def _resolve_summaries_dir() -> Path:
+  cwd = Path.cwd()
+  if (cwd / "summaries").is_dir():
+    return cwd / "summaries"
+  if (REPO_ROOT / "summaries").is_dir():
+    return REPO_ROOT / "summaries"
+  return cwd / "summaries"
+
+
 def _resolve_templates_dir() -> Path:
   resolved = _first_existing([Path.cwd() / "templates", PACKAGE_TEMPLATES_DIR, REPO_ROOT / "templates"])
   if resolved is None:
@@ -53,6 +62,7 @@ def _resolve_assets_dir() -> Path:
 
 
 NOTES_DIR = _resolve_notes_dir()
+SUMMARIES_DIR = _resolve_summaries_dir()
 TEMPLATES_DIR = _resolve_templates_dir()
 ASSETS_DIR = _resolve_assets_dir()
 
@@ -128,6 +138,25 @@ def _find_note_or_404(slug: str) -> Note:
   raise HTTPException(status_code=404, detail="Note not found")
 
 
+def _resolve_summary_path_or_404(summary_path: str) -> Path:
+  relative = Path(summary_path)
+  if relative.is_absolute():
+    raise HTTPException(status_code=404, detail="Summary not found")
+
+  if ".." in relative.parts:
+    raise HTTPException(status_code=404, detail="Summary not found")
+
+  full_path = (SUMMARIES_DIR / relative).resolve()
+  summaries_root = SUMMARIES_DIR.resolve()
+  if full_path != summaries_root and summaries_root not in full_path.parents:
+    raise HTTPException(status_code=404, detail="Summary not found")
+
+  if not full_path.is_file():
+    raise HTTPException(status_code=404, detail="Summary not found")
+
+  return full_path
+
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request) -> HTMLResponse:
   notes = _read_notes()
@@ -153,6 +182,27 @@ def note_detail(slug: str, request: Request) -> HTMLResponse:
     request=request,
     name="note.html",
     context={"note": _find_note_or_404(slug)},
+  )
+
+
+@app.get("/summary/{summary_path:path}", response_class=HTMLResponse)
+def summary_detail(summary_path: str, request: Request) -> HTMLResponse:
+  path = _resolve_summary_path_or_404(summary_path)
+  raw = path.read_text(encoding="utf-8")
+  title = _extract_title(raw, path.name)
+  html = md.render(raw)
+  return templates.TemplateResponse(
+    request=request,
+    name="note.html",
+    context={
+      "note": Note(
+        slug=path.stem,
+        note_date=date.today(),
+        title=title,
+        excerpt="",
+        html=html,
+      )
+    },
   )
 
 
