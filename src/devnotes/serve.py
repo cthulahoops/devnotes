@@ -40,10 +40,9 @@ def _resolve_notes_dir() -> Path:
 
 def _resolve_summaries_dir() -> Path:
   cwd = Path.cwd()
-  if (cwd / "summaries").is_dir():
-    return cwd / "summaries"
-  if (REPO_ROOT / "summaries").is_dir():
-    return REPO_ROOT / "summaries"
+  resolved = _first_existing([cwd / "summaries"])
+  if resolved is not None:
+    return resolved
   return cwd / "summaries"
 
 
