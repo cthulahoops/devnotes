@@ -36,7 +36,7 @@ def _resolve_notes_dir() -> Path:
 def _resolve_templates_dir() -> Path:
   resolved = _first_existing([Path.cwd() / "templates", PACKAGE_TEMPLATES_DIR, REPO_ROOT / "templates"])
   if resolved is None:
-    raise RuntimeError("No templates directory found for devlog-notes")
+    raise RuntimeError("No templates directory found for devnotes")
   return resolved
 
 

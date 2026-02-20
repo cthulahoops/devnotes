@@ -41,14 +41,14 @@ def _resolve_notes_dir() -> Path:
 def _resolve_templates_dir() -> Path:
   resolved = _first_existing([Path.cwd() / "templates", PACKAGE_TEMPLATES_DIR, REPO_ROOT / "templates"])
   if resolved is None:
-    raise RuntimeError("No templates directory found for devlog-notes")
+    raise RuntimeError("No templates directory found for devnotes")
   return resolved
 
 
 def _resolve_assets_dir() -> Path:
   resolved = _first_existing([Path.cwd() / "assets", PACKAGE_ASSETS_DIR, REPO_ROOT / "assets"])
   if resolved is None:
-    raise RuntimeError("No assets directory found for devlog-notes")
+    raise RuntimeError("No assets directory found for devnotes")
   return resolved
 
 
@@ -58,7 +58,7 @@ ASSETS_DIR = _resolve_assets_dir()
 
 md = MarkdownIt("commonmark")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
-app = FastAPI(title="Devlog Notes")
+app = FastAPI(title="Devnotes")
 app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
@@ -165,10 +165,10 @@ def _env_flag(name: str, default: bool = False) -> bool:
 
 def main() -> None:
   uvicorn.run(
-    "devlog_notes.serve:app",
+    "devnotes.serve:app",
     host="127.0.0.1",
     port=8000,
-    reload=_env_flag("DEVLOG_NOTES_RELOAD", default=False),
+    reload=_env_flag("DEVNOTES_RELOAD", default=False),
   )
 
 

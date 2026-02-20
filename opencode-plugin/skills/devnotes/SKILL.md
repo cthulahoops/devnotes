@@ -1,11 +1,11 @@
 ---
-name: devlog
-description: Generate concise, evidence-backed daily devlogs from session data, git history, and PR metadata.
+name: devnotes
+description: Generate concise, evidence-backed daily devnotes from session data, git history, and PR metadata.
 ---
 
-# Devlog Generation
+# Devnotes Generation
 
-Use this skill to produce high-signal daily devlogs from local assistant session data, git history, and PR metadata.
+Use this skill to produce high-signal daily devnotes from local assistant session data, git history, and PR metadata.
 
 ## When to use
 
@@ -67,9 +67,9 @@ Then run one synthesis pass to merge and deduplicate.
 - Resolve contradictions explicitly (for example, session claim vs repo reality).
 - Prefer commit history as the primary evidence of what was shipped.
 - If no commits exist for the target day, state it plainly (for example: "No changes committed - changes remain uncommitted in the repo").
-- Do not include investigation/process narration in the devlog (no "I checked X", "I scanned Y"). Report outcomes only.
+- Do not include investigation/process narration in the devnotes (no "I checked X", "I scanned Y"). Report outcomes only.
 
-### 4) Draft the devlog entry
+### 4) Draft the devnotes entry
 
 Write `notes/YYYY-MM-DD.md` with this template:
 

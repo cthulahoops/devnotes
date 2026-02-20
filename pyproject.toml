@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "devlog-notes"
+name = "devnotes"
 version = "0.1.0"
-description = "FastAPI server for local markdown devlog notes"
+description = "FastAPI server for local markdown devnotes"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.116.1",
@@ -15,10 +15,10 @@ dependencies = [
 ]
 
 [project.scripts]
-devlog-notes = "devlog_notes.serve:main"
-devlog-build-site = "devlog_notes.build_notes_site:main"
-devlog-list-sessions = "devlog_notes.list_sessions:main"
-devlog-transcript-to-markdown = "devlog_notes.transcript_to_markdown:main"
+devnotes = "devnotes.serve:main"
+devnotes-build-site = "devnotes.build_notes_site:main"
+devnotes-list-sessions = "devnotes.list_sessions:main"
+devnotes-transcript-to-markdown = "devnotes.transcript_to_markdown:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -28,4 +28,4 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-devlog_notes = ["templates/*.html", "assets/*.css"]
+devnotes = ["templates/*.html", "assets/*.css"]

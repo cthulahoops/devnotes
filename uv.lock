@@ -53,7 +53,7 @@ wheels = [
 ]
 
 [[package]]
-name = "devlog-notes"
+name = "devnotes"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

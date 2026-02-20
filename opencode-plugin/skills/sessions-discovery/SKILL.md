@@ -9,7 +9,7 @@ Use this skill to produce a reliable list of session transcript files to summari
 
 ## When to use
 
-- User asks for a date-based summary/devlog.
+- User asks for a date-based summary/devnotes.
 - You need to find which sessions had activity on a specific day.
 - You need deterministic session paths before launching summarization agents.
 
@@ -35,13 +35,13 @@ Use this skill to produce a reliable list of session transcript files to summari
 
 ## Preferred implementation approach
 
-- Use `devlog-list-sessions` for robust JSONL scanning.
+- Use `devnotes-list-sessions` for robust JSONL scanning.
 - Do not rely only on `sessions-index.json` if it does not include the target date.
 
 Primary command pattern:
 
 ```bash
-devlog-list-sessions 2026-02-06 --exclude clients
+devnotes-list-sessions 2026-02-06 --exclude clients
 ```
 
 Useful options:
@@ -70,4 +70,4 @@ Return only a newline-separated list of session file paths.
 - Ensure all returned paths exist.
 - Prefer deterministic ordering by `sessionId`.
 - Keep output factual and concise.
-- If `devlog-list-sessions` is available, prefer it over ad-hoc one-off scanner snippets.
+- If `devnotes-list-sessions` is available, prefer it over ad-hoc one-off scanner snippets.

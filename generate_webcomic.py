@@ -82,7 +82,7 @@ def request_image(api_key: str, model: str, prompt: str, aspect_ratio: str) -> d
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://local.devlog",
+            "HTTP-Referer": "https://local.devnotes",
             "X-Title": "Git Patch Webcomic Generator",
         },
         method="POST",
