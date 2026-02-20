@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""List Claude project sessions with activity on a target date.
+"""List assistant sessions with activity on a target date.
 
 Example:
   python tools/list-sessions.py 2026-02-06 --exclude clients
@@ -36,6 +36,11 @@ def parse_args() -> argparse.Namespace:
         "--projects-root",
         default="~/.claude/projects",
         help="Base Claude projects directory (default: ~/.claude/projects)",
+    )
+    parser.add_argument(
+        "--codex-sessions-root",
+        default="~/.codex/sessions",
+        help="Base Codex sessions directory (default: ~/.codex/sessions)",
     )
     parser.add_argument(
         "--include-agent",
@@ -154,6 +159,64 @@ def discover_sessions(roots: list[str], date: str, include_agent: bool) -> list[
     return hits
 
 
+def codex_date_dir(codex_root: str, date: str) -> str:
+    year, month, day = date.split("-")
+    return os.path.join(codex_root, year, month, day)
+
+
+def codex_session_cwd(path: str) -> str | None:
+    """Return cwd from the first session_meta event in a Codex transcript."""
+    try:
+        import json
+
+        with open(path, "r", encoding="utf-8", errors="ignore") as handle:
+            for line in handle:
+                if '"type":"session_meta"' not in line and '"type": "session_meta"' not in line:
+                    continue
+                payload = json.loads(line)
+                body = payload.get("payload")
+                if not isinstance(body, dict):
+                    return None
+                cwd = body.get("cwd")
+                if isinstance(cwd, str) and cwd:
+                    return cwd
+                return None
+    except Exception:
+        return None
+    return None
+
+
+def codex_cwd_allowed(path: str, match: str, exclude: str) -> bool:
+    if not match and not exclude:
+        return True
+    cwd = codex_session_cwd(path)
+    if not cwd:
+        # If metadata is unavailable, keep behavior permissive.
+        return True
+
+    cwd_lc = cwd.lower()
+    if match and match.lower() not in cwd_lc:
+        return False
+    if exclude and exclude.lower() in cwd_lc:
+        return False
+    return True
+
+
+def discover_codex_sessions(codex_root: str, date: str, match: str, exclude: str) -> list[str]:
+    day_dir = codex_date_dir(codex_root, date)
+    if not os.path.isdir(day_dir):
+        return []
+
+    hits: list[str] = []
+    for path in sorted(glob.glob(os.path.join(day_dir, "*.jsonl"))):
+        if not codex_cwd_allowed(path, match, exclude):
+            continue
+        if not session_has_date(path, date):
+            continue
+        hits.append(path)
+    return hits
+
+
 def print_results(hits: list[str]) -> None:
     for path in hits:
         print(path)
@@ -163,17 +226,21 @@ def main() -> int:
     args = parse_args()
     date = validate_date(args.date)
     projects_root = os.path.expanduser(args.projects_root)
+    codex_sessions_root = os.path.expanduser(args.codex_sessions_root)
 
     roots = discover_project_roots(projects_root, args.match, args.exclude)
-    if not roots:
+    claude_hits = discover_sessions(roots, date, include_agent=args.include_agent) if roots else []
+    codex_hits = discover_codex_sessions(codex_sessions_root, date, args.match, args.exclude)
+    hits = sorted(claude_hits + codex_hits)
+
+    if not hits and not roots and not os.path.isdir(codex_date_dir(codex_sessions_root, date)):
         print(
-            "No project roots found under "
-            f"{projects_root!r} for --match {args.match!r} and --exclude {args.exclude!r}.",
+            "No Claude project roots found under "
+            f"{projects_root!r} and no Codex date directory found under {codex_sessions_root!r}.",
             file=sys.stderr,
         )
         return 1
 
-    hits = discover_sessions(roots, date, include_agent=args.include_agent)
     print_results(hits)
     return 0
 

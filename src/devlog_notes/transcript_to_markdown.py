@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert a Claude-style session JSONL transcript into conversation markdown."""
+"""Convert assistant session JSONL transcripts into conversation markdown."""
 
 from __future__ import annotations
 
@@ -258,10 +258,39 @@ def iter_turns(
                 branches.add(branch)
 
             event_type = event.get("type")
-            if event_type not in {"user", "assistant"}:
-                continue
+            payload = event.get("payload")
 
-            message = event.get("message")
+            # Codex session metadata is nested under payload.
+            if event_type == "session_meta" and isinstance(payload, dict):
+                nested_id = payload.get("id")
+                if isinstance(nested_id, str) and nested_id:
+                    session_ids.add(nested_id)
+                nested_cwd = payload.get("cwd")
+                if isinstance(nested_cwd, str) and nested_cwd:
+                    cwd_values.add(nested_cwd)
+                nested_version = payload.get("cli_version")
+                if isinstance(nested_version, str) and nested_version:
+                    versions.add(nested_version)
+
+            message: dict[str, Any] | None = None
+            fallback_role = ""
+            # Claude format.
+            if event_type in {"user", "assistant"}:
+                if isinstance(event.get("message"), dict):
+                    message = event["message"]
+                    fallback_role = event_type
+            # Codex format.
+            elif event_type == "response_item" and isinstance(payload, dict):
+                if payload.get("type") == "message":
+                    role = payload.get("role")
+                    if role == "developer":
+                        continue
+                    message = {
+                        "role": role,
+                        "content": payload.get("content"),
+                    }
+                    fallback_role = str(role or "")
+
             if not isinstance(message, dict):
                 continue
 
@@ -273,7 +302,7 @@ def iter_turns(
                 usage_records += 1
                 add_usage("", usage)
 
-            role = normalize_role(message.get("role"), event_type)
+            role = normalize_role(message.get("role"), fallback_role)
             body = extract_body(
                 message.get("content"),
                 include_thinking=include_thinking,
