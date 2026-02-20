@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block title %}{{ note.title }} | Devnotes{% endblock %}
 {% block content %}
-<header>
-  <h1>{{ note.title }}</h1>
+<header class="page-header">
+  <h1 class="page-title">{{ note.title }}</h1>
+  {% if show_note_date is not defined or show_note_date %}
   <p class="meta">{{ note.note_date.isoformat() }}</p>
+  {% endif %}
 </header>
-<nav>
+<nav class="site-nav">
   <a href="/">Back to Home</a>
   <a href="/archive/">View Archive</a>
 </nav>
-<article>
+<article class="note-card note-body">
   {{ note.html | safe }}
 </article>
 {% endblock %}

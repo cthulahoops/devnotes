@@ -109,6 +109,32 @@ def _extract_excerpt(markdown: str) -> str:
   return excerpt[:220] + ("..." if len(excerpt) > 220 else "")
 
 
+def _strip_leading_h1(html: str) -> str:
+  return re.sub(r"^\s*<h1>.*?</h1>\s*", "", html, count=1, flags=re.IGNORECASE | re.DOTALL)
+
+
+def _strip_leading_date(html: str, note_date: date) -> str:
+  candidates = (
+    note_date.isoformat(),
+    f"{note_date:%B} {note_date.day}, {note_date:%Y}",
+  )
+  for token in candidates:
+    html = re.sub(
+      rf"^\s*<p>\s*(?:<(?:em|strong)>)?\s*(?:date:\s*)?{re.escape(token)}\s*(?:</(?:em|strong)>)?\s*</p>\s*",
+      "",
+      html,
+      count=1,
+      flags=re.IGNORECASE,
+    )
+  return html
+
+
+def _normalize_note_html(html: str, note_date: date) -> str:
+  html = _strip_leading_h1(html)
+  html = _strip_leading_date(html, note_date)
+  return html
+
+
 def _read_notes() -> list[Note]:
   notes: list[Note] = []
   if not NOTES_DIR.exists():
@@ -124,7 +150,7 @@ def _read_notes() -> list[Note]:
     raw = path.read_text(encoding="utf-8")
     title = _extract_title(raw, slug)
     excerpt = _extract_excerpt(raw)
-    html = md.render(raw)
+    html = _normalize_note_html(md.render(raw), parsed_date)
     notes.append(Note(slug=slug, note_date=parsed_date, title=title, excerpt=excerpt, html=html))
 
   notes.sort(key=lambda note: note.note_date, reverse=True)
@@ -182,7 +208,7 @@ def note_detail(slug: str, request: Request) -> HTMLResponse:
   return templates.TemplateResponse(
     request=request,
     name="note.html",
-    context={"note": _find_note_or_404(slug)},
+    context={"note": _find_note_or_404(slug), "show_note_date": True},
   )
 
 
@@ -191,18 +217,20 @@ def summary_detail(summary_path: str, request: Request) -> HTMLResponse:
   path = _resolve_summary_path_or_404(summary_path)
   raw = path.read_text(encoding="utf-8")
   title = _extract_title(raw, path.name)
-  html = md.render(raw)
+  today = date.today()
+  html = _normalize_note_html(md.render(raw), today)
   return templates.TemplateResponse(
     request=request,
     name="note.html",
     context={
       "note": Note(
         slug=path.stem,
-        note_date=date.today(),
+        note_date=today,
         title=title,
         excerpt="",
         html=html,
-      )
+      ),
+      "show_note_date": False,
     },
   )
 

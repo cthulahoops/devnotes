@@ -1,11 +1,13 @@
 :root {
-  --bg: #f6f4ef;
-  --surface: #fffdf9;
-  --text: #202022;
-  --muted: #5a5a66;
-  --accent: #0f6a64;
-  --accent-soft: #e2f2ef;
-  --border: #d8d5cf;
+  --bg: #f5f2eb;
+  --surface: #fffdfa;
+  --surface-soft: #f2ece1;
+  --text: #232127;
+  --muted: #66606f;
+  --accent: #0d5c55;
+  --accent-ink: #083c37;
+  --border: #d7d0c2;
+  --shadow: 0 14px 30px -24px rgba(16, 22, 30, 0.5);
 }
 
 * {
@@ -15,9 +17,12 @@
 body {
   margin: 0;
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
-  background: radial-gradient(circle at top right, #ece7db, var(--bg) 35%);
+  background:
+    radial-gradient(circle at 8% 0%, #eae2d2 0%, transparent 40%),
+    radial-gradient(circle at 90% 15%, #dfd7c8 0%, transparent 35%),
+    var(--bg);
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 a {
@@ -32,60 +37,102 @@ a:hover {
 .container {
   max-width: 860px;
   margin: 0 auto;
-  padding: 2rem 1.1rem 3rem;
+  padding: 2.1rem 1.1rem 3.2rem;
 }
 
-header {
-  margin-bottom: 1.5rem;
+.page-header {
+  margin-bottom: 1.1rem;
 }
 
-h1,
-h2,
-h3 {
-  line-height: 1.2;
+.page-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+.page-subtitle {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.35rem;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.34rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 84%, var(--surface-soft));
+  color: var(--accent-ink);
+  font-size: 0.95rem;
+}
+
+.site-nav a:hover {
+  text-decoration: none;
+  background: color-mix(in oklab, var(--surface) 60%, var(--surface-soft));
+}
+
+.note-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.note-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1.1rem 1.2rem;
+}
+
+.note-card h2 {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.note-body {
+  margin-top: 0.75rem;
+}
+
+.note-body :first-child {
   margin-top: 0;
+}
+
+.note-body :last-child {
+  margin-bottom: 0;
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1rem 1.1rem;
-  margin-bottom: 0.8rem;
+  padding: 0.95rem 1.05rem;
 }
 
-.meta {
-  color: var(--muted);
-  font-size: 0.95rem;
-  margin-bottom: 0.3rem;
+.card h2 {
+  margin: 0.2rem 0 0;
+  font-size: 1.22rem;
 }
 
-nav {
-  margin-bottom: 1.2rem;
-}
-
-nav a {
-  margin-right: 1rem;
-}
-
-article {
+.empty {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px dashed var(--border);
   border-radius: 12px;
-  padding: 1.1rem;
-}
-
-.feed-entry {
-  margin-bottom: 2rem;
-}
-
-.feed-entry article {
-  margin-top: 0.6rem;
-}
-
-.feed-entry + .feed-entry {
-  padding-top: 1.2rem;
-  border-top: 1px solid var(--border);
+  color: var(--muted);
+  padding: 1rem;
 }
 
 hr {
@@ -98,4 +145,16 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
+  border-radius: 10px;
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 1.5rem 0.85rem 2.2rem;
+  }
+
+  .note-card,
+  .card {
+    padding: 0.95rem;
+  }
 }
