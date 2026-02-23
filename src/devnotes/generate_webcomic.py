@@ -243,6 +243,7 @@ def run(config: RunConfig, api_key: str) -> tuple[Path, str, str]:
         meta=meta,
     )
 
+    response_data: dict | None = None
     try:
         response_data = request_image(api_key=api_key, payload=payload)
         mime_type, image_bytes = extract_image(response_data)
@@ -278,7 +279,7 @@ def run(config: RunConfig, api_key: str) -> tuple[Path, str, str]:
             run_dir,
             prompt=config.prompt,
             payload=payload,
-            response_data=None,
+            response_data=response_data,
             meta=meta,
         )
         raise

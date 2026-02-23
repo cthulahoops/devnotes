@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import io
+import json
 import os
 import tempfile
 import unittest
@@ -90,6 +91,33 @@ class GenerateWebcomicTests(unittest.TestCase):
             self.assertTrue((run_dir / "request.json").exists())
             self.assertTrue((run_dir / "response.json").exists())
             self.assertTrue((run_dir / "meta.json").exists())
+
+    def test_run_logs_response_on_extract_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            cwd = Path(tempdir)
+            response_data = {"choices": [{"message": {"content": "no image in this response"}}]}
+            config = generate_webcomic.RunConfig(
+                model="model-x",
+                aspect_ratio="16:9",
+                prompt="prompt text",
+                stdin_text="git show output",
+                output=cwd / "images" / "comic",
+                run_date="2026-02-23",
+                title="Interesting Change",
+                log_dir=cwd / ".devnotes" / "webcomic-runs",
+            )
+
+            with patch("devnotes.generate_webcomic.request_image", return_value=response_data):
+                with self.assertRaisesRegex(RuntimeError, "No images found"):
+                    generate_webcomic.run(config=config, api_key="token")
+
+            run_dirs = [p for p in config.log_dir.iterdir() if p.is_dir()]
+            self.assertEqual(len(run_dirs), 1)
+            run_dir = run_dirs[0]
+            self.assertTrue((run_dir / "response.json").exists())
+            self.assertTrue((run_dir / "meta.json").exists())
+            loaded = json.loads((run_dir / "response.json").read_text(encoding="utf-8"))
+            self.assertEqual(loaded, response_data)
 
 
 if __name__ == "__main__":
