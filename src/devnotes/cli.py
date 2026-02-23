@@ -4,7 +4,7 @@ from pathlib import Path
 
 import click
 
-from . import build_notes_site, list_sessions, serve, transcript_to_markdown
+from . import build_notes_site, generate_webcomic, list_sessions, serve, transcript_to_markdown
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
@@ -137,6 +137,66 @@ def transcript_to_markdown_command(
         raise click.exceptions.Exit(code)
 
 
+@cli.command("generate-webcomic")
+@click.option("--model", default=generate_webcomic.DEFAULT_MODEL, show_default=True, help="OpenRouter model.")
+@click.option(
+    "--aspect-ratio",
+    default=generate_webcomic.DEFAULT_ASPECT_RATIO,
+    show_default=True,
+    help="Image aspect ratio.",
+)
+@click.option(
+    "--additional-prompt",
+    default="",
+    show_default=True,
+    help="Additional prompt instructions appended to the base prompt.",
+)
+@click.option(
+    "--date",
+    default=None,
+    help="Date for auto image naming (YYYY-MM-DD). Defaults to today.",
+)
+@click.option(
+    "--title",
+    default="",
+    show_default=True,
+    help="Title used for auto filename slug generation.",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(path_type=Path),
+    help="Output image path. Defaults to images/{date}-{title-or-webcomic}.<ext>.",
+)
+@click.option(
+    "--log-dir",
+    type=click.Path(path_type=Path),
+    default=Path(generate_webcomic.DEFAULT_LOG_DIR),
+    show_default=True,
+    help="Directory for per-run prompt/request/response logs.",
+)
+def generate_webcomic_command(
+    model: str,
+    aspect_ratio: str,
+    additional_prompt: str,
+    date: str | None,
+    title: str,
+    output: Path | None,
+    log_dir: Path,
+) -> None:
+    args: list[str] = ["--model", model, "--aspect-ratio", aspect_ratio, "--additional-prompt", additional_prompt]
+    if date:
+        args.extend(["--date", date])
+    if title:
+        args.extend(["--title", title])
+    if output:
+        args.extend(["--output", str(output)])
+    args.extend(["--log-dir", str(log_dir)])
+
+    code = generate_webcomic.main(args)
+    if code:
+        raise click.exceptions.Exit(code)
+
+
 def main() -> None:
     cli()
-

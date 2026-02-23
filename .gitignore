@@ -13,3 +13,4 @@ src/*.egg-info/
 
 # Local/runtime outputs
 # (intentionally no root-level template/assets/site ignores)
+.devnotes/
