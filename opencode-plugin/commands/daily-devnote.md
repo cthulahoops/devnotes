@@ -15,5 +15,6 @@ Process:
 5. Write one file per session to `summaries/<resolvedDate>-<sessionId>.md`.
 6. Load and use the `daily-devnote` skill.
 7. Synthesize all per-session summaries into `notes/<resolvedDate>.md` using the `daily-devnote` skill structure. Optimize for future retrieval, not storytelling.
+8. When the user asks for a comic (or confirms they want one), load and use the `webcomic-note` skill to add a generated image directly under the note title.
 
 If `$1` is missing or cannot be resolved to a valid date, stop and ask for a valid date input.
