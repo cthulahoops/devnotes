@@ -20,6 +20,7 @@ from urllib.request import Request, urlopen
 DEFAULT_MODEL = "google/gemini-3-pro-image-preview"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_LOG_DIR = ".devnotes/webcomic-runs"
+MAX_PROMPT_CHARS = 100_000
 DEFAULT_PROMPT_PREFIX = (
     "Create a webcomic that explains the new feature as clearly and entertainingly as possible."
 )
@@ -91,6 +92,13 @@ def build_prompt(stdin_text: str, additional_prompt: str) -> str:
     if not extra:
         return prompt
     return f"{prompt}\n\nAdditional instructions:\n{extra}"
+
+
+def ensure_prompt_limit(prompt: str) -> None:
+    if len(prompt) > MAX_PROMPT_CHARS:
+        raise RuntimeError(
+            f"Prompt too long ({len(prompt)} chars). Max allowed is {MAX_PROMPT_CHARS}."
+        )
 
 
 def parse_data_url(image_url: str) -> tuple[str, str]:
@@ -222,6 +230,7 @@ def save_run_artifacts(
 
 
 def run(config: RunConfig, api_key: str) -> tuple[Path, str, str]:
+    ensure_prompt_limit(config.prompt)
     payload = build_payload(model=config.model, prompt=config.prompt, aspect_ratio=config.aspect_ratio)
     stdin_hash = hashlib.sha256(config.stdin_text.encode("utf-8")).hexdigest()
     run_dir = create_run_dir(config.log_dir, config.title)

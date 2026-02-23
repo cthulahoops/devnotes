@@ -119,6 +119,26 @@ class GenerateWebcomicTests(unittest.TestCase):
             loaded = json.loads((run_dir / "response.json").read_text(encoding="utf-8"))
             self.assertEqual(loaded, response_data)
 
+    def test_run_rejects_prompt_over_limit_without_request(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            cwd = Path(tempdir)
+            oversized_prompt = "x" * (generate_webcomic.MAX_PROMPT_CHARS + 1)
+            config = generate_webcomic.RunConfig(
+                model="model-x",
+                aspect_ratio="16:9",
+                prompt=oversized_prompt,
+                stdin_text="git show output",
+                output=cwd / "images" / "comic",
+                run_date="2026-02-23",
+                title="Interesting Change",
+                log_dir=cwd / ".devnotes" / "webcomic-runs",
+            )
+
+            with patch("devnotes.generate_webcomic.request_image") as mocked_request:
+                with self.assertRaisesRegex(RuntimeError, "Prompt too long"):
+                    generate_webcomic.run(config=config, api_key="token")
+                mocked_request.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
