@@ -22,10 +22,15 @@ The goal to write notes that aid in memory, combat cognitive debt, and act as qu
 - Title (Markdown H1): first line must be a Markdown H1 (`# ...`)
   - Required format: `# <YYYY-MM-DD> - <title>`
   - It should be click-baity, container specific details, surprising, and intriguing.
+  - Prefer concrete "what worked vs what is still broken" phrasing over abstract status language.
   - Avoid:
     - Generic labels (`non-client work`, `misc`, `summary`)
     - All-caps or emotional hype (`SHOCKING`, `INSANE`, `EVERYTHING CHANGED`)
     - Vague claims without artifacts (`made things better`)
+    - Buzzword-heavy phrasing (`landed`, `surfaced`, `edges`, `leveraged`, `enabled`) when a specific outcome is available.
+    - Unexplained jargon/acronyms in the title (for example `UIAA`) unless the acronym is widely understood by the intended reader.
+  - Good headline pattern: explicit object + concrete progress + concrete blocker.
+    - Example: `# 2026-02-21 - We got NanoClaw on Matrix, but device verification still not working.`
 - `## What I actually did`
   - 3-8 bullets, each starting with a strong verb.
   - Include concrete objects: file paths, commit hashes, script names, test names, commands, URLs, issue IDs.
