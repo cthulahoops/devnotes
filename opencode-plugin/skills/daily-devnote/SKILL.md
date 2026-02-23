@@ -9,15 +9,19 @@ Use this skill when drafting or editing a single day note in `notes/YYYY-MM-DD.m
 
 If asked to replace a note, don't read the old version, just overwrite with new content.
 
+## Interesting?
+
+The goal to write notes that aid in memory, combat cognitive debt, and act as quick reminders of what was achieved.
+
+- The most interesting things are usually what we built. Focus on PRs and commits.
+- Things the user drew attention to are more interesting than things the agent discovered.
+- If the agent mentioned something, and the user ignored it, then it's probably not that interesting.
+
 ## Required output format
 
-- Title (Markdown H1): first line must be a Markdown H1 (`# ...`) that is specific, evidence-grounded, and interesting without hype. Emphasize the single most interesting thing from the day.
+- Title (Markdown H1): first line must be a Markdown H1 (`# ...`)
   - Required format: `# <YYYY-MM-DD> - <title>`
-  - Preferred style: measured hook + concrete technical payoff.
-  - Recommended pattern: `<problem signal>, but <higher-impact engineering outcome>`
-  - Good examples:
-    - `# 2026-02-16 - The room-session bug was real, but the bigger win was safer campaign logic`
-    - `# 2026-01-29 - Shell quoting looked minor, but it prevented deployment-footgun failures`
+  - It should be click-baity, container specific details, surprising, and intriguing.
   - Avoid:
     - Generic labels (`non-client work`, `misc`, `summary`)
     - All-caps or emotional hype (`SHOCKING`, `INSANE`, `EVERYTHING CHANGED`)
