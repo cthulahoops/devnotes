@@ -9,7 +9,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markdown_it import MarkdownIt
@@ -165,6 +165,15 @@ def _find_note_or_404(slug: str) -> Note:
   raise HTTPException(status_code=404, detail="Note not found")
 
 
+def _serialize_note(note: Note) -> dict[str, str]:
+  return {
+    "slug": note.slug,
+    "title": note.title,
+    "note_date": note.note_date.isoformat(),
+    "html": note.html,
+  }
+
+
 def _resolve_summary_path_or_404(summary_path: str) -> Path:
   relative = Path(summary_path)
   if relative.is_absolute():
@@ -187,10 +196,40 @@ def _resolve_summary_path_or_404(summary_path: str) -> Path:
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request) -> HTMLResponse:
   notes = _read_notes()
+  page_size = 5
+  initial_notes = notes[:page_size]
+  has_more = len(notes) > len(initial_notes)
   return templates.TemplateResponse(
     request=request,
     name="index.html",
-    context={"notes": notes[:5]},
+    context={
+      "notes": initial_notes,
+      "initial_count": len(initial_notes),
+      "page_size": page_size,
+      "has_more": has_more,
+    },
+  )
+
+
+@app.get("/api/notes")
+def notes_page(offset: int = 0, limit: int = 5) -> JSONResponse:
+  if offset < 0:
+    raise HTTPException(status_code=400, detail="offset must be >= 0")
+  if limit < 1:
+    raise HTTPException(status_code=400, detail="limit must be >= 1")
+
+  safe_limit = min(limit, 20)
+  notes = _read_notes()
+  page = notes[offset : offset + safe_limit]
+  next_offset = offset + len(page)
+  has_more = next_offset < len(notes)
+
+  return JSONResponse(
+    {
+      "notes": [_serialize_note(note) for note in page],
+      "next_offset": next_offset,
+      "has_more": has_more,
+    }
   )
 
 

@@ -9,7 +9,7 @@
   <a href="/archive/">View Archive</a>
 </nav>
 {% if notes %}
-  <div class="note-list">
+  <div class="note-list" data-note-list data-next-offset="{{ initial_count }}" data-page-size="{{ page_size }}">
   {% for note in notes %}
   <section class="note-card">
     <h2><a href="/notes/{{ note.slug }}/">{{ note.title }}</a></h2>
@@ -19,6 +19,83 @@
   </section>
   {% endfor %}
   </div>
+  <div
+    class="infinite-scroll-state{% if not has_more %} is-hidden{% endif %}"
+    data-scroll-state
+    data-has-more="{{ 'true' if has_more else 'false' }}"
+  >
+    Loading more notes...
+  </div>
+  <div class="infinite-scroll-sentinel{% if not has_more %} is-hidden{% endif %}" data-scroll-sentinel></div>
+  <script>
+    (() => {
+      const list = document.querySelector("[data-note-list]");
+      const state = document.querySelector("[data-scroll-state]");
+      const sentinel = document.querySelector("[data-scroll-sentinel]");
+      if (!list || !state || !sentinel) {
+        return;
+      }
+
+      let nextOffset = Number(list.dataset.nextOffset || 0);
+      const pageSize = Number(list.dataset.pageSize || 5);
+      let hasMore = state.dataset.hasMore === "true";
+      let loading = false;
+
+      function renderNote(note) {
+        const section = document.createElement("section");
+        section.className = "note-card";
+        section.innerHTML = `
+          <h2><a href="/notes/${note.slug}/">${note.title}</a></h2>
+          <article class="note-body">${note.html}</article>
+        `;
+        return section;
+      }
+
+      async function loadMore() {
+        if (!hasMore || loading) {
+          return;
+        }
+        loading = true;
+        state.textContent = "Loading more notes...";
+        state.classList.remove("is-hidden");
+
+        try {
+          const response = await fetch(`/api/notes?offset=${nextOffset}&limit=${pageSize}`);
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (Array.isArray(data.notes)) {
+            data.notes.forEach((note) => list.appendChild(renderNote(note)));
+          }
+
+          nextOffset = Number(data.next_offset ?? nextOffset);
+          hasMore = Boolean(data.has_more);
+          state.dataset.hasMore = hasMore ? "true" : "false";
+
+          if (!hasMore) {
+            sentinel.classList.add("is-hidden");
+            state.textContent = "You reached the end.";
+          }
+        } catch (error) {
+          state.textContent = "Could not load more notes. Scroll to retry.";
+        } finally {
+          loading = false;
+        }
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            loadMore();
+          }
+        });
+      }, { rootMargin: "320px 0px" });
+
+      observer.observe(sentinel);
+    })();
+  </script>
 {% else %}
   <p class="empty">No notes found in <code>notes/</code>.</p>
 {% endif %}

@@ -135,6 +135,20 @@ a:hover {
   padding: 1rem;
 }
 
+.infinite-scroll-state {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.infinite-scroll-sentinel {
+  height: 1px;
+}
+
+.is-hidden {
+  display: none;
+}
+
 hr {
   border: none;
   border-top: 1px solid var(--border);
